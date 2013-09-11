@@ -49,9 +49,9 @@ public:
   Double(const char *longKey, double defaultValue, const char *comment = NULL,
       unsigned char shortKey = '\0', double *target = NULL);
   void String(const char *longKey, const char *comment = NULL,
-      unsigned char shortKey = '\0', char *target = NULL);
+      char shortKey = '\0', char *target = NULL);
   void String(const char *longKey, const char *defaultValue,
-      const char *comment = NULL, unsigned char shortKey = '\0', char *target = NULL);
+      const char *comment = NULL, char shortKey = '\0', char *target = NULL);
 
   // if one of the keys are encountered, a file is included (read in place)
   void File(const char *longKey, const char *comment = NULL,

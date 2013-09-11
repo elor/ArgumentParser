@@ -60,13 +60,13 @@ void ArgumentParser::Double(const char *longKey, double defaultValue,
 }
 
 void ArgumentParser::String(const char *longKey, const char *comment,
-    unsigned char shortKey, char *target)
+    char shortKey, char *target)
 {
   args->String(longKey, comment, shortKey, target);
 }
 
 void ArgumentParser::String(const char *longKey, const char *defaultValue,
-    const char *comment, unsigned char shortKey, char *target)
+    const char *comment, char shortKey, char *target)
 {
   args->String(longKey, defaultValue, comment, shortKey, target);
 }
@@ -78,7 +78,8 @@ void ArgumentParser::File(const char *longKey, const char *comment,
   args->File(longKey, comment, shortKey);
 }
 
-void ArgumentParser::registerShortKey(unsigned char shortKey, const char *longKey)
+void ArgumentParser::registerShortKey(unsigned char shortKey,
+    const char *longKey)
 {
   args->registerShortKey(shortKey, longKey);
 }
