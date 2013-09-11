@@ -71,6 +71,11 @@ void ArgumentParser::String(const char *longKey, const char *defaultValue,
   args->String(longKey, defaultValue, comment, shortKey, target);
 }
 
+void ArgumentParser::Standalones(int maximum)
+{
+  args->Standalones(maximum);
+}
+
 // if one of the keys are encountered, a file is included (read in place)
 void ArgumentParser::File(const char *longKey, const char *comment,
     unsigned char shortKey)
@@ -147,6 +152,21 @@ void ArgumentParser::getString(const char *longKey, char *output)
 const char *ArgumentParser::getCString(const char *longKey)
 {
   return args->getCString(longKey);
+}
+
+int ArgumentParser::getStandaloneCount()
+{
+  return args->getStandaloneCount();
+}
+
+void ArgumentParser::getStandalone(unsigned int index, char *output)
+{
+  args->getStandalone(index, output);
+}
+
+const char *ArgumentParser::getCStandalone(unsigned int index)
+{
+  return args->getCStandalone(index);
 }
 
 void ArgumentParser::set(const char *longKey, bool value)

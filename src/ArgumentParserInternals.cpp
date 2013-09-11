@@ -14,7 +14,7 @@
 
 using namespace std;
 ArgumentParserInternals::ArgumentParserInternals(const char *_progname) :
-  shortKeys(new char*[256])
+  shortKeys(new char*[256]), maxStandalones(0)
 {
   progname = strdup(_progname);
   for (int i = 0; i < 256; ++i)
@@ -92,6 +92,17 @@ void ArgumentParserInternals::clearComments()
   }
 }
 
+void ArgumentParserInternals::clearStandalones()
+{
+  for (StandaloneVector::iterator it = standalones.begin(); it
+      != standalones.end(); ++it)
+  {
+    free(const_cast<char*> (*it));
+  }
+
+  standalones.clear();
+}
+
 void ArgumentParserInternals::clearAll()
 {
   clearShortKeys();
@@ -99,6 +110,7 @@ void ArgumentParserInternals::clearAll()
   clearTargets();
   clearDefaults();
   clearComments();
+  clearStandalones();
 }
 
 bool validateKey(const char *longKey)
@@ -164,6 +176,16 @@ Argument *ArgumentParserInternals::fetchDefault(const char *longKey)
   {
     return &it->second;
   }
+}
+
+void ArgumentParserInternals::addStandalone(const char *standalone)
+{
+  if (maxStandalones != -1 && (unsigned) maxStandalones >= standalones.size())
+  {
+    throw runtime_error("maximum number of standalone arguments exceeded");
+  }
+
+  standalones.push_back(strdup(standalone));
 }
 
 Argument *ArgumentParserInternals::fetchArgument(const char *longKey,
@@ -328,12 +350,31 @@ void ArgumentParserInternals::String(const char *longKey, const char *comment,
 }
 
 void ArgumentParserInternals::String(const char *longKey,
-    const char *defaultValue, const char *comment, unsigned char shortKey, char *target)
+    const char *defaultValue, const char *comment, unsigned char shortKey,
+    char *target)
 {
   String(longKey, comment, shortKey, target);
   Argument *argument = registerDefault(longKey, Argument::stringType);
   argument->set(defaultValue);
   setTarget(argument, target);
+}
+
+void ArgumentParserInternals::Standalones(int maximum)
+{
+  if (standalones.size() != 0)
+  {
+    throw runtime_error(
+        "can't change maximum number of standalone arguments: arguments have already been read");
+  }
+
+  if (maximum < 0)
+  {
+    maxStandalones = -1;
+  }
+  else
+  {
+    maxStandalones = maximum;
+  }
 }
 
 void ArgumentParserInternals::File(const char *longKey, const char *comment,
@@ -470,6 +511,32 @@ const char *ArgumentParserInternals::getCString(const char *longKey)
   assert(argument != NULL);
   assert(argument->hasType(Argument::stringType));
   return argument->getString();
+}
+
+int ArgumentParserInternals::getStandaloneCount()
+{
+  return standalones.size();
+}
+
+void ArgumentParserInternals::getStandalone(unsigned int index, char *output)
+{
+  if (index >= standalones.size())
+  {
+    throw runtime_error("getStandalone: invalid index");
+  }
+  assert(output != NULL);
+
+  strcpy(output, standalones[index]);
+}
+
+const char *ArgumentParserInternals::getCStandalone(unsigned int index)
+{
+  if (index >= standalones.size())
+  {
+    throw runtime_error("getStandalone: invalid index");
+  }
+
+  return standalones[index];
 }
 
 void ArgumentParserInternals::set(const char *longKey, bool value)
@@ -735,9 +802,7 @@ void ArgumentParserInternals::parseArgs(int argc, char **argv)
       // this is a value
       if (lastKey == NULL)
       {
-        //        err << "unexpected value: '" << argv[i] << "' option key expected"
-        //            << endl;
-        throw runtime_error("unexpected value");
+        addStandalone(argv[i]);
       }
 
       set(lastKey, argv[i]);

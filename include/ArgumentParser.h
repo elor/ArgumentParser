@@ -53,6 +53,8 @@ public:
   void String(const char *longKey, const char *defaultValue,
       const char *comment = NULL, char shortKey = '\0', char *target = NULL);
 
+  void Standalones(int maximum = -1);
+
   // if one of the keys are encountered, a file is included (read in place)
   void File(const char *longKey, const char *comment = NULL,
       unsigned char shortKey = '\0');
@@ -73,6 +75,10 @@ public:
   double getDouble(const char *longKey);
   void getString(const char *longKey, char *output);
   const char *getCString(const char *longKey);
+
+  int getStandaloneCount();
+  void getStandalone(unsigned int index, char *output);
+  const char *getCStandalone(unsigned int index);
 
   void set(const char *longKey, bool value);
   void set(const char *longKey, int value);

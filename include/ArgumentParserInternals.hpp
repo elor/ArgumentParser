@@ -11,6 +11,7 @@
 #include <map>
 #include <Argument.hpp>
 #include <cstring>
+#include <vector>
 
 class ArgumentParserInternals
 {
@@ -27,12 +28,15 @@ private:
   typedef std::multimap<const char *, void*, cmp_str> TargetMap;
   typedef std::pair<TargetMap::iterator, TargetMap::iterator> TargetRange;
   typedef std::map<const char *, const char *, cmp_str> CommentMap;
+  typedef std::vector<const char *> StandaloneVector;
 
   char **shortKeys;
   ArgumentMap arguments;
   ArgumentMap defaults;
   TargetMap targets;
   CommentMap comments;
+  StandaloneVector standalones;
+  int maxStandalones;
   char *progname;
 
   void clearShortKeys();
@@ -41,6 +45,7 @@ private:
   void clearTargets();
   void clearDefaults();
   void clearComments();
+  void clearStandalones();
   void clearAll();
 
   Argument
@@ -49,6 +54,7 @@ private:
   const char *fetchComment(const char *longKey);
   Argument *registerDefault(const char *longKey, Argument::ValueType valueType);
   Argument *fetchDefault(const char *longKey);
+  void addStandalone(const char *standalone);
 
   void setTarget(Argument *argument, void *target);
   void setTargets(const char *longKey);
@@ -75,7 +81,8 @@ public:
   void Bool(const char *longKey, bool defaultValue, const char *comment,
       unsigned char shortKey, bool *target);
   void
-  Int(const char *longKey, const char *comment, unsigned char shortKey, int *target);
+  Int(const char *longKey, const char *comment, unsigned char shortKey,
+      int *target);
   void Int(const char *longKey, int defaultValue, const char *comment,
       unsigned char shortKey, int *target);
   void UInt(const char *longKey, const char *comment, unsigned char shortKey,
@@ -91,6 +98,8 @@ public:
       char *target);
   void String(const char *longKey, const char *defaultValue,
       const char *comment, unsigned char shortKey, char *target);
+
+  void Standalones(int maximum = -1);
 
   // if one of the keys are encountered, a file is included (read in place)
   void File(const char *longKey, const char *comment, unsigned char shortKey);
@@ -111,6 +120,10 @@ public:
   double getDouble(const char *longKey);
   void getString(const char *longKey, char *output);
   const char *getCString(const char *longKey);
+
+  int getStandaloneCount();
+  void getStandalone(unsigned int index, char *output);
+  const char *getCStandalone(unsigned int index);
 
   void set(const char *longKey, bool value);
   void set(const char *longKey, int value);
