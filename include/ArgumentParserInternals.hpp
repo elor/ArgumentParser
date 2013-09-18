@@ -67,7 +67,7 @@ private:
   const char *getLongKey(unsigned char shortKey);
 
 public:
-  ArgumentParserInternals(const char *_progname = "");
+  ArgumentParserInternals(const char *_progname);
   virtual ~ArgumentParserInternals();
 
   /*
@@ -103,8 +103,7 @@ public:
   void String(const char *longKey, const char *defaultValue,
       const char *comment, unsigned char shortKey, char *target);
 
-  void Standalones(int maximum = -1, const char *helpKey = "argument",
-      const char *comment = NULL);
+  void Standalones(int maximum, const char *helpKey, const char *comment);
 
   // if one of the keys are encountered, a file is included (read in place)
   void File(const char *longKey, const char *comment, unsigned char shortKey);
