@@ -50,6 +50,8 @@ private:
   void clearStandalones();
   void clearAll();
 
+  void lookForHelp();
+
   Argument
   *registerArgument(const char *longKey, Argument::ValueType valueType);
   Argument *fetchArgument(const char *longKey, bool useDefault = false);

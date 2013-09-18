@@ -22,6 +22,8 @@ ArgumentParserInternals::ArgumentParserInternals(const char *_progname) :
   {
     shortKeys[i] = NULL;
   }
+
+  Bool("help", false, "display help message and exit", 'h', NULL);
 }
 
 ArgumentParserInternals::~ArgumentParserInternals()
@@ -122,6 +124,15 @@ void ArgumentParserInternals::clearAll()
   clearDefaults();
   clearComments();
   clearStandalones();
+}
+
+void ArgumentParserInternals::lookForHelp()
+{
+  if (getBool("help"))
+  {
+    displayHelpMessage();
+    exit(0);
+  }
 }
 
 bool validateKey(const char *longKey)
@@ -710,6 +721,8 @@ void ArgumentParserInternals::parseFile(const char *filename)
   }
 
   file.close();
+
+  lookForHelp();
 }
 
 void ArgumentParserInternals::parseLine(const char *line)
@@ -821,6 +834,8 @@ void ArgumentParserInternals::parseLine(const char *line)
   memcpy(value, valueStart, valueEnd - valueStart);
 
   set(longKey, value);
+
+  lookForHelp();
 }
 
 void ArgumentParserInternals::parseArgs(int argc, char **argv)
@@ -937,6 +952,7 @@ void ArgumentParserInternals::parseArgs(int argc, char **argv)
   cout << "done parsing"<< endl;
 #endif
 
+  lookForHelp();
 }
 
 void ArgumentParserInternals::displayHelpMessage()
