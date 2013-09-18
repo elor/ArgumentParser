@@ -71,9 +71,9 @@ void ArgumentParser::String(const char *longKey, const char *defaultValue,
   args->String(longKey, defaultValue, comment, shortKey, target);
 }
 
-void ArgumentParser::Standalones(int maximum)
+void ArgumentParser::Standalones(int maximum = -1, const char *helpKey, const char *comment)
 {
-  args->Standalones(maximum);
+  args->Standalones(maximum, helpKey, comment);
 }
 
 // if one of the keys are encountered, a file is included (read in place)

@@ -37,6 +37,8 @@ private:
   CommentMap comments;
   StandaloneVector standalones;
   int maxStandalones;
+  char *standaloneComment;
+  char *standaloneHelpKey;
   char *progname;
 
   void clearShortKeys();
@@ -99,7 +101,8 @@ public:
   void String(const char *longKey, const char *defaultValue,
       const char *comment, unsigned char shortKey, char *target);
 
-  void Standalones(int maximum = -1);
+  void Standalones(int maximum = -1, const char *helpKey = "argument",
+      const char *comment = NULL);
 
   // if one of the keys are encountered, a file is included (read in place)
   void File(const char *longKey, const char *comment, unsigned char shortKey);

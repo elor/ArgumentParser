@@ -14,7 +14,8 @@
 
 using namespace std;
 ArgumentParserInternals::ArgumentParserInternals(const char *_progname) :
-  shortKeys(new char*[256]), maxStandalones(0)
+  shortKeys(new char*[256]), maxStandalones(0), standaloneComment(NULL),
+      standaloneHelpKey(strdup("argument"))
 {
   progname = strdup(_progname);
   for (int i = 0; i < 256; ++i)
@@ -101,6 +102,16 @@ void ArgumentParserInternals::clearStandalones()
   }
 
   standalones.clear();
+  if (standaloneHelpKey)
+  {
+    free(standaloneHelpKey);
+    standaloneHelpKey = NULL;
+  }
+  if (standaloneComment)
+  {
+    free(standaloneComment);
+    standaloneComment = NULL;
+  }
 }
 
 void ArgumentParserInternals::clearAll()
@@ -182,7 +193,8 @@ void ArgumentParserInternals::addStandalone(const char *standalone)
 {
   if (maxStandalones != -1 && (unsigned) maxStandalones >= standalones.size())
   {
-    throw runtime_error("maximum number of standalone arguments exceeded");
+    //    throw runtime_error("maximum number of standalone arguments exceeded");
+    return;
   }
 
   standalones.push_back(strdup(standalone));
@@ -359,7 +371,8 @@ void ArgumentParserInternals::String(const char *longKey,
   setTarget(argument, target);
 }
 
-void ArgumentParserInternals::Standalones(int maximum)
+void ArgumentParserInternals::Standalones(int maximum, const char *helpKey,
+    const char *comment)
 {
   if (standalones.size() != 0)
   {
@@ -375,6 +388,25 @@ void ArgumentParserInternals::Standalones(int maximum)
   {
     maxStandalones = maximum;
   }
+
+  assert(helpKey != NULL);
+
+  if (standaloneHelpKey)
+  {
+    free(standaloneHelpKey);
+  }
+  standaloneHelpKey = strdup(helpKey);
+
+  if (standaloneComment)
+  {
+    free(standaloneComment);
+    standaloneComment = NULL;
+  }
+  if (comment)
+  {
+    standaloneComment = strdup(comment);
+  }
+
 }
 
 void ArgumentParserInternals::File(const char *longKey, const char *comment,
@@ -795,18 +827,38 @@ void ArgumentParserInternals::parseArgs(int argc, char **argv)
 {
   const char *lastKey = NULL; // always a long key
 
+  assert(argc > 0);
+
+  if (strlen(progname) == 0)
+  {
+#ifdef DEBUG
+    cout << "setting progname to "<< argv[0] << endl;
+#endif
+
+    setProgName(argv[0]);
+  }
+
   for (int i = 1; i < argc; ++i)
   {
+#ifdef DEBUG
+    cout << "parsing argument #" << i << ": '" << argv[i] << "'" << endl;
+#endif
     if (argv[i][0] != '-')
     {
       // this is a value
       if (lastKey == NULL)
       {
+#ifdef DEBUG
+        cout << "adding standalone argument"<< endl;
+#endif
+
         addStandalone(argv[i]);
       }
-
-      set(lastKey, argv[i]);
-      lastKey = NULL;
+      else
+      {
+        set(lastKey, argv[i]);
+        lastKey = NULL;
+      }
     }
     else
     {
@@ -874,13 +926,44 @@ void ArgumentParserInternals::parseArgs(int argc, char **argv)
 
   if (lastKey != NULL)
   {
+#ifdef DEBUG
+    cout << "setting last key to true" << endl;
+#endif
+
     set(lastKey, true);
   }
+
+#ifdef DEBUG
+  cout << "done parsing"<< endl;
+#endif
+
 }
 
 void ArgumentParserInternals::displayHelpMessage()
 {
-  printf("\nusage: %s [options]\n\nOptions:\n", progname);
+  printf("\nusage: %s [options]", progname);
+  assert(standaloneHelpKey != NULL);
+  switch (maxStandalones)
+  {
+  case 0:
+    break;
+  case -1:
+    printf(" %s... (unlimited)", standaloneHelpKey);
+    break;
+  case 1:
+    printf(" %s", standaloneHelpKey);
+    break;
+  default:
+    printf(" %s... (up to %d)", standaloneHelpKey, maxStandalones);
+    break;
+  }
+
+  if (maxStandalones != 0 && standaloneComment != NULL)
+  {
+    printf("\n\n%s:\n\t%s", standaloneHelpKey, standaloneComment);
+  }
+
+  printf("\n\nOptions:\n");
 
   for (ArgumentMap::iterator it = arguments.begin(); it != arguments.end(); ++it)
   {
