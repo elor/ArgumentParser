@@ -71,7 +71,8 @@ void ArgumentParser::String(const char *longKey, const char *defaultValue,
   args->String(longKey, defaultValue, comment, shortKey, target);
 }
 
-void ArgumentParser::Standalones(int maximum = -1, const char *helpKey, const char *comment)
+void ArgumentParser::Standalones(int maximum, const char *helpKey,
+    const char *comment)
 {
   args->Standalones(maximum, helpKey, comment);
 }

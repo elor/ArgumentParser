@@ -53,7 +53,7 @@ public:
   void String(const char *longKey, const char *defaultValue,
       const char *comment = NULL, char shortKey = '\0', char *target = NULL);
 
-  void Standalones(int maximum, const char *helpKey = "argument",
+  void Standalones(int maximum = -1, const char *helpKey = "argument",
       const char *comment = NULL);
 
   // if one of the keys are encountered, a file is included (read in place)
