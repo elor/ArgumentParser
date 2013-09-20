@@ -200,11 +200,12 @@ Argument *ArgumentParserInternals::fetchDefault(const char *longKey)
   }
 }
 
+#include<iostream>
 void ArgumentParserInternals::addStandalone(const char *standalone)
 {
-  if (maxStandalones != -1 && (unsigned) maxStandalones >= standalones.size())
+  if (maxStandalones != -1 && standalones.size() >= (unsigned) maxStandalones)
   {
-    //    throw runtime_error("maximum number of standalone arguments exceeded");
+//    throw runtime_error("maximum number of standalone arguments exceeded");
     return;
   }
 
