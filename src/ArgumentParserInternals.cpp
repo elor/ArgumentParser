@@ -13,6 +13,13 @@
 #include <cstdlib>
 
 using namespace std;
+
+ArgumentParserInternals::CallbackContainer::CallbackContainer(
+    Callback _callback, void *_data) :
+  callback(_callback), data(_data)
+{
+}
+
 ArgumentParserInternals::ArgumentParserInternals(const char *_progname) :
   shortKeys(new char*[256]), maxStandalones(0), standaloneComment(NULL),
       standaloneHelpKey(strdup("argument"))
@@ -116,6 +123,11 @@ void ArgumentParserInternals::clearStandalones()
   }
 }
 
+void ArgumentParserInternals::clearCallbacks()
+{
+  callbacks.clear();
+}
+
 void ArgumentParserInternals::clearAll()
 {
   clearShortKeys();
@@ -124,6 +136,7 @@ void ArgumentParserInternals::clearAll()
   clearDefaults();
   clearComments();
   clearStandalones();
+  clearCallbacks();
 }
 
 void ArgumentParserInternals::lookForHelp()
@@ -205,11 +218,32 @@ void ArgumentParserInternals::addStandalone(const char *standalone)
 {
   if (maxStandalones != -1 && standalones.size() >= (unsigned) maxStandalones)
   {
-//    throw runtime_error("maximum number of standalone arguments exceeded");
+    //    throw runtime_error("maximum number of standalone arguments exceeded");
     return;
   }
 
   standalones.push_back(strdup(standalone));
+}
+
+void ArgumentParserInternals::fireCallbacks(const char *longKey)
+{
+  CallbackRange range = callbacks.equal_range(longKey);
+#ifdef DEBUG
+  cout << "range for " << longKey << "' :"
+  << (range.first == range.second ? "empty" : "full") << endl;
+#endif
+
+  for (CallbackMap::iterator it = range.first; it != range.second; ++it)
+  {
+#ifdef DEBUG
+    cout << "firing '" << longKey << "'" << endl;
+#endif
+
+    Callback callback = it->second.callback;
+    void *data = it->second.data;
+
+    callback(data);
+  }
 }
 
 Argument *ArgumentParserInternals::fetchArgument(const char *longKey,
@@ -381,6 +415,13 @@ void ArgumentParserInternals::String(const char *longKey,
   Argument *argument = registerDefault(longKey, Argument::stringType);
   argument->set(defaultValue);
   setTarget(argument, target);
+}
+
+void ArgumentParserInternals::registerCallback(const char *longKey,
+    Callback callback, void* data)
+{
+  callbacks.insert(
+      CallbackMap::value_type(longKey, CallbackContainer(callback, data)));
 }
 
 void ArgumentParserInternals::Standalones(int maximum, const char *helpKey,
@@ -592,6 +633,8 @@ void ArgumentParserInternals::set(const char *longKey, bool value)
   argument->set(value);
 
   setTargets(longKey);
+
+  fireCallbacks(longKey);
 }
 
 void ArgumentParserInternals::set(const char *longKey, int value)
@@ -603,6 +646,8 @@ void ArgumentParserInternals::set(const char *longKey, int value)
   argument->set(value);
 
   setTargets(longKey);
+
+  fireCallbacks(longKey);
 }
 
 void ArgumentParserInternals::set(const char *longKey, unsigned int value)
@@ -614,6 +659,8 @@ void ArgumentParserInternals::set(const char *longKey, unsigned int value)
   argument->set(value);
 
   setTargets(longKey);
+
+  fireCallbacks(longKey);
 }
 
 void ArgumentParserInternals::set(const char *longKey, double value)
@@ -625,6 +672,8 @@ void ArgumentParserInternals::set(const char *longKey, double value)
   argument->set(value);
 
   setTargets(longKey);
+
+  fireCallbacks(longKey);
 }
 
 void ArgumentParserInternals::set(const char *longKey, const char *value)
@@ -643,6 +692,11 @@ void ArgumentParserInternals::set(const char *longKey, const char *value)
   }
 
   setTargets(longKey);
+
+#ifdef DEBUG
+  cout << "fireCallbacks for key '" << longKey << "'" << endl;
+#endif
+  fireCallbacks(longKey);
 }
 
 void ArgumentParserInternals::setTarget(Argument *argument, void *target)
@@ -841,7 +895,7 @@ void ArgumentParserInternals::parseLine(const char *line)
 
 void ArgumentParserInternals::parseArgs(int argc, char **argv)
 {
-  const char *lastKey = NULL; // always a long key
+  const char *lastKey = NULL; // always a long key or NULL
 
   assert(argc > 0);
 

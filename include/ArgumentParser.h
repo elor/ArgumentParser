@@ -13,6 +13,9 @@
 class ArgumentParserInternals;
 class ArgumentParser
 {
+public:
+  typedef void(*Callback)(void*);
+
 private:
   ArgumentParserInternals *args;
 
@@ -52,6 +55,9 @@ public:
       char shortKey = '\0', char *target = NULL);
   void String(const char *longKey, const char *defaultValue,
       const char *comment = NULL, char shortKey = '\0', char *target = NULL);
+
+  void registerCallback(const char *longKey, Callback callback,
+      void* data = NULL);
 
   void Standalones(int maximum = -1, const char *helpKey = "argument",
       const char *comment = NULL);

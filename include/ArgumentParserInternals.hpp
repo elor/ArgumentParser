@@ -15,6 +15,9 @@
 
 class ArgumentParserInternals
 {
+public:
+  typedef void(*Callback)(void*);
+
 private:
   struct cmp_str
   {
@@ -24,11 +27,21 @@ private:
     }
   };
 
+  struct CallbackContainer
+  {
+    Callback callback;
+    void *data;
+
+    CallbackContainer(Callback _callback, void *_data);
+  };
+
   typedef std::map<const char *, Argument, cmp_str> ArgumentMap;
   typedef std::multimap<const char *, void*, cmp_str> TargetMap;
   typedef std::pair<TargetMap::iterator, TargetMap::iterator> TargetRange;
   typedef std::map<const char *, const char *, cmp_str> CommentMap;
   typedef std::vector<const char *> StandaloneVector;
+  typedef std::multimap<const char *, CallbackContainer, cmp_str> CallbackMap;
+  typedef std::pair<CallbackMap::iterator, CallbackMap::iterator> CallbackRange;
 
   char **shortKeys;
   ArgumentMap arguments;
@@ -36,6 +49,7 @@ private:
   TargetMap targets;
   CommentMap comments;
   StandaloneVector standalones;
+  CallbackMap callbacks;
   int maxStandalones;
   char *standaloneComment;
   char *standaloneHelpKey;
@@ -48,6 +62,7 @@ private:
   void clearDefaults();
   void clearComments();
   void clearStandalones();
+  void clearCallbacks();
   void clearAll();
 
   void lookForHelp();
@@ -59,6 +74,7 @@ private:
   Argument *registerDefault(const char *longKey, Argument::ValueType valueType);
   Argument *fetchDefault(const char *longKey);
   void addStandalone(const char *standalone);
+  void fireCallbacks(const char *longKey);
 
   void setTarget(Argument *argument, void *target);
   void setTargets(const char *longKey);
@@ -102,6 +118,8 @@ public:
       char *target);
   void String(const char *longKey, const char *defaultValue,
       const char *comment, unsigned char shortKey, char *target);
+
+  void registerCallback(const char *longKey, Callback callback, void* data);
 
   void Standalones(int maximum, const char *helpKey, const char *comment);
 

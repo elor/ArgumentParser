@@ -71,6 +71,12 @@ void ArgumentParser::String(const char *longKey, const char *defaultValue,
   args->String(longKey, defaultValue, comment, shortKey, target);
 }
 
+void ArgumentParser::registerCallback(const char *longKey, Callback callback,
+    void* data)
+{
+  args->registerCallback(longKey, callback, data);
+}
+
 void ArgumentParser::Standalones(int maximum, const char *helpKey,
     const char *comment)
 {
