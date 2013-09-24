@@ -1,5 +1,3 @@
-PLOT= 5 6 7
-
 OBJ+= obj/convert.o
 OBJ+= obj/Argument.o
 OBJ+= obj/ArgumentParser.o
@@ -10,8 +8,9 @@ INC+= ArgumentParser.h
 OUT= argumentparser
 ARL=lib$(OUT).a
 
-LIB_DIR = ../../usr/lib
-INC_DIR = ../../usr/include
+BIN_DIR= /home/elor/usr/bin/
+LIB_DIR= /home/elor/usr/lib/
+INC_DIR= /home/elor/usr/include/
 
 .PHONY: clean install uninstall
 
@@ -38,8 +37,8 @@ $(OUT): dirs $(OBJ)
 	ar rcs $(ARL) $(OBJ)
 
 install:
-	cp $(ARL) $(LIB_DIR)
-	cp include/$(INC) $(INC_DIR)
+	install $(ARL) $(LIB_DIR)
+	install include/$(INC) $(INC_DIR)
 	
 uninstall:
 	rm $(LIB_DIR)/$(ARL) $(INC_DIR)/$(INC)
