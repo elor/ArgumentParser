@@ -7,6 +7,7 @@ INSTALL
 -------
 
   make
+
   make install
 
 This is a personal project, hence the personalized installation path /home/elor/usr/bin.
