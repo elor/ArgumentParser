@@ -9,6 +9,7 @@
 #include <debug.hpp>
 #include <cctype>
 #include <fstream>
+#include <iostream>
 #include <cstdio>
 #include <cstdlib>
 
@@ -164,8 +165,9 @@ Argument *ArgumentParserInternals::registerArgument(const char *longKey,
 {
   if (!validateKey(longKey))
   {
-    //    err << "ERROR: invalid key: '" << longKey << "'" << endl;
-    throw runtime_error("invalid args key");
+    cerr << "ERROR: invalid key: '" << longKey << "'" << endl;
+    return NULL;
+    //    throw runtime_error("invalid args key");
   }
 
   ArgumentMap::iterator it = arguments.find(longKey);
@@ -429,8 +431,13 @@ void ArgumentParserInternals::Standalones(int maximum, const char *helpKey,
 {
   if (standalones.size() != 0)
   {
-    throw runtime_error(
-        "can't change maximum number of standalone arguments: arguments have already been read");
+    cerr
+        << "can't change maximum number of standalone arguments: arguments have already been read"
+        << endl;
+
+    return;
+    //    throw runtime_error(
+    //        "can't change maximum number of standalone arguments: arguments have already been read");
   }
 
   if (maximum < 0)
@@ -508,6 +515,11 @@ bool ArgumentParserInternals::shortKeyExists(unsigned char shortKey)
 
 const char *ArgumentParserInternals::getLongKey(unsigned char shortKey)
 {
+  if (shortKeys[shortKey] == NULL)
+  {
+    cerr << "'" << shortKey << "' is no valid shortkey" << endl;
+    exit(1);
+  }
   return shortKeys[shortKey];
 }
 
@@ -553,48 +565,102 @@ bool ArgumentParserInternals::allValuesSet(const char *errorFormat)
 bool ArgumentParserInternals::getBool(const char *longKey)
 {
   Argument *argument = fetchArgument(longKey, true);
-  assert(argument != NULL);
-  assert(argument->hasType(Argument::boolType));
+  if (argument == NULL)
+  {
+    cerr << "error: option '" << longKey << "' not defined" << endl;
+    exit(1);
+  }
+  else if (!argument->hasType(Argument::boolType))
+  {
+    cerr << "error: option '" << longKey << "' does not have type 'Bool'"
+        << endl;
+    exit(1);
+  }
   return argument->getBool();
 }
 
 int ArgumentParserInternals::getInt(const char *longKey)
 {
   Argument *argument = fetchArgument(longKey, true);
-  assert(argument != NULL);
-  assert(argument->hasType(Argument::intType));
+  if (argument == NULL)
+  {
+    cerr << "error: option '" << longKey << "' not defined" << endl;
+    exit(1);
+  }
+  else if (!argument->hasType(Argument::intType))
+  {
+    cerr << "error: option '" << longKey << "' does not have type 'Int'"
+        << endl;
+    exit(1);
+  }
   return argument->getInt();
 }
 
 unsigned int ArgumentParserInternals::getUInt(const char *longKey)
 {
   Argument *argument = fetchArgument(longKey, true);
-  assert(argument != NULL);
-  assert(argument->hasType(Argument::uintType));
+  if (argument == NULL)
+  {
+    cerr << "error: option '" << longKey << "' not defined" << endl;
+    exit(1);
+  }
+  else if (!argument->hasType(Argument::uintType))
+  {
+    cerr << "error: option '" << longKey << "' does not have type 'UInt'"
+        << endl;
+    exit(1);
+  }
   return argument->getUInt();
 }
 
 double ArgumentParserInternals::getDouble(const char *longKey)
 {
   Argument *argument = fetchArgument(longKey, true);
-  assert(argument != NULL);
-  assert(argument->hasType(Argument::doubleType));
+  if (argument == NULL)
+  {
+    cerr << "error: option '" << longKey << "' not defined" << endl;
+    exit(1);
+  }
+  else if (!argument->hasType(Argument::doubleType))
+  {
+    cerr << "error: option '" << longKey << "' does not have type 'Double'"
+        << endl;
+    exit(1);
+  }
   return argument->getDouble();
 }
 
 void ArgumentParserInternals::getString(const char *longKey, char *output)
 {
   Argument *argument = fetchArgument(longKey, true);
-  assert(argument != NULL);
-  assert(argument->hasType(Argument::stringType));
+  if (argument == NULL)
+  {
+    cerr << "error: option '" << longKey << "' not defined" << endl;
+    exit(1);
+  }
+  else if (!argument->hasType(Argument::stringType))
+  {
+    cerr << "error: option '" << longKey << "' does not have type 'String'"
+        << endl;
+    exit(1);
+  }
   strcpy(output, argument->getString());
 }
 
 const char *ArgumentParserInternals::getCString(const char *longKey)
 {
   Argument *argument = fetchArgument(longKey, true);
-  assert(argument != NULL);
-  assert(argument->hasType(Argument::stringType));
+  if (argument == NULL)
+  {
+    cerr << "error: option '" << longKey << "' not defined" << endl;
+    exit(1);
+  }
+  else if (!argument->hasType(Argument::stringType))
+  {
+    cerr << "error: option '" << longKey << "' does not have type 'String'"
+        << endl;
+    exit(1);
+  }
   return argument->getString();
 }
 
@@ -607,7 +673,9 @@ void ArgumentParserInternals::getStandalone(unsigned int index, char *output)
 {
   if (index >= standalones.size())
   {
-    throw runtime_error("getStandalone: invalid index");
+    cerr << "getStandalone: invalid index" << endl;
+    exit(1);
+    //    throw runtime_error("getStandalone: invalid index");
   }
   assert(output != NULL);
 
@@ -618,7 +686,9 @@ const char *ArgumentParserInternals::getCStandalone(unsigned int index)
 {
   if (index >= standalones.size())
   {
-    throw runtime_error("getStandalone: invalid index");
+    cerr << "getCStandalone: invalid index" << endl;
+    return NULL;
+    //    throw runtime_error("getCStandalone: invalid index");
   }
 
   return standalones[index];
@@ -628,7 +698,11 @@ void ArgumentParserInternals::set(const char *longKey, bool value)
 {
   Argument *argument = fetchArgument(longKey);
 
-  assert(argument != NULL);
+  if (argument == NULL)
+  {
+    cerr << "'" << longKey << "' is no valid option" << endl;
+    exit(1);
+  }
 
   argument->set(value);
 
@@ -641,7 +715,11 @@ void ArgumentParserInternals::set(const char *longKey, int value)
 {
   Argument *argument = fetchArgument(longKey);
 
-  assert(argument != NULL);
+  if (argument == NULL)
+  {
+    cerr << "'" << longKey << "' is no valid option" << endl;
+    exit(1);
+  }
 
   argument->set(value);
 
@@ -654,7 +732,11 @@ void ArgumentParserInternals::set(const char *longKey, unsigned int value)
 {
   Argument *argument = fetchArgument(longKey);
 
-  assert(argument != NULL);
+  if (argument == NULL)
+  {
+    cerr << "'" << longKey << "' is no valid option" << endl;
+    exit(1);
+  }
 
   argument->set(value);
 
@@ -667,7 +749,11 @@ void ArgumentParserInternals::set(const char *longKey, double value)
 {
   Argument *argument = fetchArgument(longKey);
 
-  assert(argument != NULL);
+  if (argument == NULL)
+  {
+    cerr << "'" << longKey << "' is no valid option" << endl;
+    exit(1);
+  }
 
   argument->set(value);
 
@@ -680,7 +766,11 @@ void ArgumentParserInternals::set(const char *longKey, const char *value)
 {
   Argument *argument = fetchArgument(longKey);
 
-  assert(argument != NULL);
+  if (argument == NULL)
+  {
+    cerr << "'" << longKey << "' is no valid option" << endl;
+    exit(1);
+  }
 
   if (argument->getType() == Argument::noType)
   {
@@ -706,8 +796,8 @@ void ArgumentParserInternals::setTarget(Argument *argument, void *target)
     switch (argument->getType())
     {
     case Argument::noType:
-      assert(argument->getType() != Argument::noType);
-      break;
+      cerr << "can not set target for file option" << endl;
+      exit(1);
     case Argument::boolType:
       *reinterpret_cast<bool*> (target) = argument->getBool();
       break;
@@ -764,8 +854,9 @@ void ArgumentParserInternals::parseFile(const char *filename)
   ifstream file(filename);
   if (!file.is_open())
   {
-    //    err << "can't open file " << filename << endl;
-    throw runtime_error("can't read from file");
+    cerr << "can't open file " << filename << endl;
+    //    throw runtime_error("can't read from file");
+    exit(1);
   }
 
   char lineBuffer[1024];
@@ -810,9 +901,10 @@ void ArgumentParserInternals::parseLine(const char *line)
       break;
     default:
     {
-      //      err
-      //          << "ArgumentParser::parseLine: unexpected character at beginning of line '"
-      //          << line << "'" << endl;
+      cerr
+          << "ArgumentParser::parseLine: unexpected character at beginning of line '"
+          << line << "'" << endl;
+      exit(1);
     }
     }
     return;
@@ -835,7 +927,7 @@ void ArgumentParserInternals::parseLine(const char *line)
   // validate existing '='
   if (*ptr != '=')
   {
-    //    err << "ArgumentParser::parseLine: missing '=' in line '" << line << "'"
+    //    cerr << "ArgumentParser::parseLine: missing '=' in line '" << line << "'"
     //        << endl;
     return;
   }
@@ -850,7 +942,7 @@ void ArgumentParserInternals::parseLine(const char *line)
   // validate valid value
   if (!isprint(*valueStart))
   {
-    //    err
+    //    cerr
     //        << "ArgumentParser::parseLine: missing value or unexpected symbol in line '"
     //        << line << "'" << endl;
     return;
@@ -865,7 +957,7 @@ void ArgumentParserInternals::parseLine(const char *line)
   // if everything's correct, we're at the end of the string
   if (*valueEnd != '\0')
   {
-    //    err << "ArgumentParser::parseLine: unexpected symbol in value of line '"
+    //    cerr << "ArgumentParser::parseLine: unexpected symbol in value of line '"
     //        << line << "'" << endl;
     return;
   }
@@ -878,7 +970,11 @@ void ArgumentParserInternals::parseLine(const char *line)
   }
 
   ++valueEnd;
-  assert(valueEnd > valueStart);
+  if (valueEnd > valueStart)
+  {
+    cerr << "syntax error in line '" << line << "'" << endl;
+    exit(1);
+  }
 
   char longKey[1024];
   memset(longKey, '\0', sizeof(longKey));
@@ -949,13 +1045,16 @@ void ArgumentParserInternals::parseArgs(int argc, char **argv)
         {
           if (eqpos == arg)
           {
-            //            err << "missing key in option'" << arg << "'" << endl;
-            throw runtime_error("missing key");
+            cerr << "missing key in option '" << arg << "'" << endl;
+            exit(1);
+            //            throw runtime_error("missing key");
           }
-
-          *eqpos = '\0';
-          ++eqpos;
-          set(arg, eqpos);
+          else
+          {
+            *eqpos = '\0';
+            ++eqpos;
+            set(arg, eqpos);
+          }
         }
         else
         {
@@ -980,8 +1079,9 @@ void ArgumentParserInternals::parseArgs(int argc, char **argv)
         }
         else if (eqpos - keys != 1)
         {
-          //          err << "syntax error in option " << argv[i] << endl;
-          throw runtime_error("arguments: syntax error");
+          cerr << "syntax error in option '" << argv[i] << "'" << endl;
+          exit(1);
+          //          throw runtime_error("arguments: syntax error");
         }
         else
         {
@@ -1013,7 +1113,12 @@ void ArgumentParserInternals::parseArgs(int argc, char **argv)
 void ArgumentParserInternals::displayHelpMessage()
 {
   printf("\nusage: %s [options]", progname);
-  assert(standaloneHelpKey != NULL);
+  if (standaloneHelpKey == NULL)
+  {
+    cerr << "no standaloneHelpKey defined" << endl;
+    standaloneHelpKey = strdup("argument");
+  }
+
   switch (maxStandalones)
   {
   case 0:
@@ -1078,8 +1183,8 @@ void ArgumentParserInternals::displayHelpMessage()
       switch (defaultValue->getType())
       {
       case Argument::noType:
-        assert(defaultValue->getType() != Argument::noType);
-        break;
+        cerr << "file options must not have default values" << endl;
+        exit(1);
       case Argument::boolType:
         if (defaultValue->getBool())
         {
