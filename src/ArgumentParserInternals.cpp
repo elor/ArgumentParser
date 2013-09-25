@@ -970,7 +970,7 @@ void ArgumentParserInternals::parseLine(const char *line)
   }
 
   ++valueEnd;
-  if (valueEnd > valueStart)
+  if (valueEnd <= valueStart)
   {
     cerr << "syntax error in line '" << line << "'" << endl;
     exit(1);
