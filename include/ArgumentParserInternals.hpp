@@ -159,6 +159,8 @@ public:
   void parseLine(const char *line);
   void parseArgs(int argc, char **argv);
 
+  bool writeFile(const char *filename);
+
   void displayHelpMessage();
 };
 

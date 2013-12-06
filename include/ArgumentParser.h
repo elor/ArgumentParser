@@ -51,13 +51,13 @@ public:
   void
   Double(const char *longKey, double defaultValue, const char *comment = NULL,
       unsigned char shortKey = '\0', double *target = NULL);
-  void String(const char *longKey, const char *comment = NULL,
-      char shortKey = '\0', char *target = NULL);
+  void String(const char *longKey, const char *comment = NULL, char shortKey =
+      '\0', char *target = NULL);
   void String(const char *longKey, const char *defaultValue,
       const char *comment = NULL, char shortKey = '\0', char *target = NULL);
 
-  void registerCallback(const char *longKey, Callback callback,
-      void* data = NULL);
+  void registerCallback(const char *longKey, Callback callback, void* data =
+      NULL);
 
   void Standalones(int maximum = -1, const char *helpKey = "argument",
       const char *comment = NULL);
@@ -98,6 +98,8 @@ public:
   void parseFile(const char *filename);
   void parseLine(const char *line);
   void parseArgs(int argc, char **argv);
+
+  bool writeFile(const char *filename); // false on success, true on failure
 
   void displayHelpMessage();
 };

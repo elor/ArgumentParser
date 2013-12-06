@@ -221,6 +221,11 @@ void ArgumentParser::parseArgs(int argc, char **argv)
   args->parseArgs(argc, argv);
 }
 
+bool ArgumentParser::writeFile(const char *filename)
+{
+  return args->writeFile(filename);
+}
+
 void ArgumentParser::displayHelpMessage()
 {
   args->displayHelpMessage();

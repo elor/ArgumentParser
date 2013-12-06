@@ -174,8 +174,8 @@ Argument *ArgumentParserInternals::registerArgument(const char *longKey,
   if (it == arguments.end())
   {
     pair<ArgumentMap::iterator, bool> ret;
-    ret = arguments.insert(
-        ArgumentMap::value_type(strdup(longKey), Argument(valueType)));
+    ret = arguments.insert(ArgumentMap::value_type(strdup(longKey), Argument(
+        valueType)));
 
     assert(ret.second == true);
     it = ret.first;
@@ -191,8 +191,8 @@ Argument *ArgumentParserInternals::registerDefault(const char *longKey,
   if (it == defaults.end())
   {
     pair<ArgumentMap::iterator, bool> ret;
-    ret = defaults.insert(
-        ArgumentMap::value_type(strdup(longKey), Argument(valueType)));
+    ret = defaults.insert(ArgumentMap::value_type(strdup(longKey), Argument(
+        valueType)));
 
     assert(ret.second == true);
     it = ret.first;
@@ -295,8 +295,8 @@ void ArgumentParserInternals::registerComment(const char *longKey,
   if (it == comments.end())
   {
     pair<CommentMap::iterator, bool> ret;
-    ret = comments.insert(
-        CommentMap::value_type(strdup(longKey), strdup(comment)));
+    ret = comments.insert(CommentMap::value_type(strdup(longKey), strdup(
+        comment)));
     assert(ret.second == true);
     it = ret.first;
   }
@@ -422,8 +422,8 @@ void ArgumentParserInternals::String(const char *longKey,
 void ArgumentParserInternals::registerCallback(const char *longKey,
     Callback callback, void* data)
 {
-  callbacks.insert(
-      CallbackMap::value_type(longKey, CallbackContainer(callback, data)));
+  callbacks.insert(CallbackMap::value_type(longKey, CallbackContainer(callback,
+      data)));
 }
 
 void ArgumentParserInternals::Standalones(int maximum, const char *helpKey,
@@ -518,7 +518,7 @@ const char *ArgumentParserInternals::getLongKey(unsigned char shortKey)
   if (shortKeys[shortKey] == NULL)
   {
     cerr << "'" << shortKey << "' is no valid shortkey" << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
   return shortKeys[shortKey];
 }
@@ -568,13 +568,13 @@ bool ArgumentParserInternals::getBool(const char *longKey)
   if (argument == NULL)
   {
     cerr << "error: option '" << longKey << "' not defined" << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
   else if (!argument->hasType(Argument::boolType))
   {
     cerr << "error: option '" << longKey << "' does not have type 'Bool'"
         << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
   return argument->getBool();
 }
@@ -585,13 +585,13 @@ int ArgumentParserInternals::getInt(const char *longKey)
   if (argument == NULL)
   {
     cerr << "error: option '" << longKey << "' not defined" << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
   else if (!argument->hasType(Argument::intType))
   {
     cerr << "error: option '" << longKey << "' does not have type 'Int'"
         << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
   return argument->getInt();
 }
@@ -602,13 +602,13 @@ unsigned int ArgumentParserInternals::getUInt(const char *longKey)
   if (argument == NULL)
   {
     cerr << "error: option '" << longKey << "' not defined" << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
   else if (!argument->hasType(Argument::uintType))
   {
     cerr << "error: option '" << longKey << "' does not have type 'UInt'"
         << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
   return argument->getUInt();
 }
@@ -619,13 +619,13 @@ double ArgumentParserInternals::getDouble(const char *longKey)
   if (argument == NULL)
   {
     cerr << "error: option '" << longKey << "' not defined" << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
   else if (!argument->hasType(Argument::doubleType))
   {
     cerr << "error: option '" << longKey << "' does not have type 'Double'"
         << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
   return argument->getDouble();
 }
@@ -636,13 +636,13 @@ void ArgumentParserInternals::getString(const char *longKey, char *output)
   if (argument == NULL)
   {
     cerr << "error: option '" << longKey << "' not defined" << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
   else if (!argument->hasType(Argument::stringType))
   {
     cerr << "error: option '" << longKey << "' does not have type 'String'"
         << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
   strcpy(output, argument->getString());
 }
@@ -653,13 +653,13 @@ const char *ArgumentParserInternals::getCString(const char *longKey)
   if (argument == NULL)
   {
     cerr << "error: option '" << longKey << "' not defined" << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
   else if (!argument->hasType(Argument::stringType))
   {
     cerr << "error: option '" << longKey << "' does not have type 'String'"
         << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
   return argument->getString();
 }
@@ -674,7 +674,7 @@ void ArgumentParserInternals::getStandalone(unsigned int index, char *output)
   if (index >= standalones.size())
   {
     cerr << "getStandalone: invalid index" << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
     //    throw runtime_error("getStandalone: invalid index");
   }
   assert(output != NULL);
@@ -701,7 +701,7 @@ void ArgumentParserInternals::set(const char *longKey, bool value)
   if (argument == NULL)
   {
     cerr << "'" << longKey << "' is no valid option" << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
 
   argument->set(value);
@@ -718,7 +718,7 @@ void ArgumentParserInternals::set(const char *longKey, int value)
   if (argument == NULL)
   {
     cerr << "'" << longKey << "' is no valid option" << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
 
   argument->set(value);
@@ -735,7 +735,7 @@ void ArgumentParserInternals::set(const char *longKey, unsigned int value)
   if (argument == NULL)
   {
     cerr << "'" << longKey << "' is no valid option" << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
 
   argument->set(value);
@@ -752,7 +752,7 @@ void ArgumentParserInternals::set(const char *longKey, double value)
   if (argument == NULL)
   {
     cerr << "'" << longKey << "' is no valid option" << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
 
   argument->set(value);
@@ -769,7 +769,7 @@ void ArgumentParserInternals::set(const char *longKey, const char *value)
   if (argument == NULL)
   {
     cerr << "'" << longKey << "' is no valid option" << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
 
   if (argument->getType() == Argument::noType)
@@ -797,7 +797,7 @@ void ArgumentParserInternals::setTarget(Argument *argument, void *target)
     {
     case Argument::noType:
       cerr << "can not set target for file option" << endl;
-      exit(1);
+      exit(1); // TODO don't immediately die on the user
     case Argument::boolType:
       *reinterpret_cast<bool*> (target) = argument->getBool();
       break;
@@ -856,7 +856,7 @@ void ArgumentParserInternals::parseFile(const char *filename)
   {
     cerr << "can't open file " << filename << endl;
     //    throw runtime_error("can't read from file");
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
 
   char lineBuffer[1024];
@@ -904,7 +904,7 @@ void ArgumentParserInternals::parseLine(const char *line)
       cerr
           << "ArgumentParser::parseLine: unexpected character at beginning of line '"
           << line << "'" << endl;
-      exit(1);
+      exit(1); // TODO don't immediately die on the user
     }
     }
     return;
@@ -973,7 +973,7 @@ void ArgumentParserInternals::parseLine(const char *line)
   if (valueEnd <= valueStart)
   {
     cerr << "syntax error in line '" << line << "'" << endl;
-    exit(1);
+    exit(1); // TODO don't immediately die on the user
   }
 
   char longKey[1024];
@@ -1046,7 +1046,7 @@ void ArgumentParserInternals::parseArgs(int argc, char **argv)
           if (eqpos == arg)
           {
             cerr << "missing key in option '" << arg << "'" << endl;
-            exit(1);
+            exit(1); // TODO don't immediately die on the user
             //            throw runtime_error("missing key");
           }
           else
@@ -1080,7 +1080,7 @@ void ArgumentParserInternals::parseArgs(int argc, char **argv)
         else if (eqpos - keys != 1)
         {
           cerr << "syntax error in option '" << argv[i] << "'" << endl;
-          exit(1);
+          exit(1); // TODO don't immediately die on the user
           //          throw runtime_error("arguments: syntax error");
         }
         else
@@ -1108,6 +1108,52 @@ void ArgumentParserInternals::parseArgs(int argc, char **argv)
 #endif
 
   lookForHelp();
+}
+
+bool ArgumentParserInternals::writeFile(const char *filename)
+{
+  ofstream file(filename);
+  if (!file.is_open())
+  {
+    cerr << "can't open file '" << filename << "' for writing" << endl;
+    //    throw runtime_error("can't read from file");
+    return true;
+  }
+
+  for (ArgumentMap::iterator it = arguments.begin(); it != arguments.end(); ++it)
+  {
+    if (wasValueSet(it->first, true) && !it->second.hasType(Argument::noType))
+    {
+      file << it->first << " = ";
+      file.precision(16);
+      switch (it->second.getType())
+      {
+      case Argument::boolType:
+        file << (it->second.getBool() ? "true" : "false");
+        break;
+      case Argument::intType:
+        file << it->second.getInt();
+        break;
+      case Argument::uintType:
+        file << it->second.getUInt();
+        break;
+      case Argument::doubleType:
+        file << it->second.getDouble();
+        break;
+      case Argument::stringType:
+        file << it->second.getString();
+        break;
+      case Argument::noType:
+        // already handled in condition block
+        break;
+      }
+      file << endl;
+    }
+  }
+
+  file.close();
+
+  return false;
 }
 
 void ArgumentParserInternals::displayHelpMessage()
@@ -1184,7 +1230,7 @@ void ArgumentParserInternals::displayHelpMessage()
       {
       case Argument::noType:
         cerr << "file options must not have default values" << endl;
-        exit(1);
+        exit(1); // TODO don't immediately die on the user
       case Argument::boolType:
         if (defaultValue->getBool())
         {
