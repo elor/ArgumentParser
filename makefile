@@ -56,7 +56,7 @@ count:
 	bash -c "cat $(shell echo -n $(shell tree -fi | grep ./*.*pp)) | wc -l"
 
 dirs:
-	mkdir -p $(shell tree -dif --noreport src | awk '{sub(/src/,"obj");print}')
+	mkdir -p $(shell find src -type d | awk '{sub(/src/,"obj");print}')
 	
 clean:
 	-rm -rfv ./obj
