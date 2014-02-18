@@ -43,20 +43,10 @@ install:
 uninstall:
 	rm $(LIB_DIR)/$(ARL) $(INC_DIR)/$(INC)
 
-open:
-	bash -c "vim $(shell echo -n $(shell tree -fi | grep ./*.*pp))"
-
-list:
-	@tree -fi | grep ./*.*pp
-
 find:
 	-Scripts/findbycontent.sh
-
-count:
-	bash -c "cat $(shell echo -n $(shell tree -fi | grep ./*.*pp)) | wc -l"
-
 dirs:
-	mkdir -p $(shell find src -type d | awk '{sub(/src/,"obj");print}')
+	mkdir -p $(shell find src -type d | sed 's/^src/obj/')
 	
 clean:
 	-rm -rfv ./obj
