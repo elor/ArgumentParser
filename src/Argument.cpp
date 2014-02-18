@@ -5,9 +5,9 @@
  *      Author: elor
  */
 
-#include <Argument.hpp>
-#include <convert.hpp>
-#include <debug.hpp>
+#include "Argument.hpp"
+#include "convert.hpp"
+#include "debug.hpp"
 #include <cstring>
 
 Argument::Argument(ValueType _wantedType) :
