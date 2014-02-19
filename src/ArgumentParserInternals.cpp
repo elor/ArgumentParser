@@ -5,8 +5,8 @@
  *      Author: elor
  */
 
-#include "ArgumentParserInternals.hpp"
-#include "debug.hpp"
+#include <ArgumentParserInternals.hpp>
+#include <debug.hpp>
 #include <cctype>
 #include <fstream>
 #include <iostream>

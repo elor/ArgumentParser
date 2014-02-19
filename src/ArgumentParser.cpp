@@ -1,5 +1,5 @@
-#include "ArgumentParser.h"
-#include "ArgumentParserInternals.hpp"
+#include <ArgumentParser.h>
+#include <ArgumentParserInternals.hpp>
 
 ArgumentParser::ArgumentParser(const char *progname) :
   args(new ArgumentParserInternals(progname))
