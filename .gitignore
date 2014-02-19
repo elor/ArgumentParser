@@ -1,6 +1,5 @@
 .cproject
 .project
-obj/
 .libs/
 INSTALL
 Makefile
