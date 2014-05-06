@@ -45,7 +45,7 @@ int convert(const char *str, bool *out)
     return 1;
   }
 
-  delete[] lowerStr;
+  free(lowerStr);
 
   return 0;
 }
