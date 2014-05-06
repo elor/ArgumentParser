@@ -9,6 +9,7 @@
 #include <convert.hpp>
 #include <debug.hpp>
 #include <cstring>
+#include <cstdlib>
 
 Argument::Argument(ValueType _wantedType) :
   stringValue(NULL), defined(false), valueType(_wantedType)
@@ -24,7 +25,7 @@ void Argument::clear()
 {
   if (valueType == stringType && stringValue != NULL)
   {
-    delete[] stringValue;
+    free(const_cast<char*>(stringValue));
   }
 
   stringValue = NULL;
@@ -79,8 +80,7 @@ void Argument::set(const char *value)
     if (convert(value, &boolValue) == 0)
     {
       set(boolValue);
-    }
-    else
+    } else
     {
       //      err << "Argument::set: '" << value << " doesn't match type 'bool'"
       //          << endl;
@@ -93,8 +93,7 @@ void Argument::set(const char *value)
     if (convert(value, &intValue) == 0)
     {
       set(intValue);
-    }
-    else
+    } else
     {
       //      err << "Argument::set: '" << value << " doesn't match type 'int'" << endl;
     }
@@ -107,8 +106,7 @@ void Argument::set(const char *value)
     {
       set(uintValue);
 
-    }
-    else
+    } else
     {
       //      err << "Argument::set: '" << value << " doesn't match type 'uint'"
       //          << endl;
@@ -122,8 +120,7 @@ void Argument::set(const char *value)
     {
       set(doubleValue);
 
-    }
-    else
+    } else
     {
 //      err << "Argument::set: '" << value << " doesn't match type 'double'"
 //          << endl;
@@ -164,8 +161,7 @@ bool Argument::getBool() const
   if (hasType(boolType))
   {
     return boolValue;
-  }
-  else
+  } else
   {
     return false;
   }
@@ -176,12 +172,10 @@ int Argument::getInt() const
   if (hasType(intType))
   {
     return intValue;
-  }
-  else if (hasType(uintType))
+  } else if (hasType(uintType))
   {
     return (int) uintValue;
-  }
-  else
+  } else
   {
     return 0;
   }
@@ -192,12 +186,10 @@ unsigned int Argument::getUInt() const
   if (hasType(uintType))
   {
     return uintValue;
-  }
-  else if (hasType(intType))
+  } else if (hasType(intType))
   {
     return (unsigned int) intValue;
-  }
-  else
+  } else
   {
     return 0;
   }
@@ -208,8 +200,7 @@ double Argument::getDouble() const
   if (hasType(doubleType))
   {
     return doubleValue;
-  }
-  else
+  } else
   {
     return 0.0;
   }
@@ -220,8 +211,7 @@ const char *Argument::getString() const
   if (hasType(stringType))
   {
     return stringValue;
-  }
-  else
+  } else
   {
     return NULL;
   }
