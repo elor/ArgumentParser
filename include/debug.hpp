@@ -8,8 +8,8 @@
 #pragma once
 
 #include <stdexcept>
-#include <cassert>
 
 #ifndef RELEASE
+#include <cassert>
 #include <iostream>
 #endif

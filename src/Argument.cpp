@@ -35,7 +35,8 @@ void Argument::clear()
 void Argument::set(bool value)
 {
   clear();
-  assert(valueType == boolType);
+  if (valueType != boolType)
+    return;
   boolValue = value;
   defined = true;
 }
@@ -43,7 +44,8 @@ void Argument::set(bool value)
 void Argument::set(int value)
 {
   clear();
-  assert(valueType == intType);
+  if (valueType != intType)
+    return;
   intValue = value;
   defined = true;
 }
@@ -51,7 +53,8 @@ void Argument::set(int value)
 void Argument::set(unsigned int value)
 {
   clear();
-  assert(valueType == uintType);
+  if (valueType != uintType)
+    return;
   uintValue = value;
   defined = true;
 }
@@ -59,7 +62,8 @@ void Argument::set(unsigned int value)
 void Argument::set(double value)
 {
   clear();
-  assert(valueType == doubleType);
+  if (valueType != doubleType)
+    return;
   doubleValue = value;
   defined = true;
 }
@@ -67,8 +71,8 @@ void Argument::set(double value)
 void Argument::set(const char *value)
 {
   clear();
-  assert(value != NULL);
-  assert(valueType != noType);
+  if (value == NULL)
+    return;
 
   switch (valueType)
   {
