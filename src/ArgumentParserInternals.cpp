@@ -6,7 +6,6 @@
  */
 
 #include <ArgumentParserInternals.hpp>
-#include <debug.hpp>
 #include <cctype>
 #include <fstream>
 #include <cstdlib>
