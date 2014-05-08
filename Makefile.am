@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS = subdir-objects
 ACLOCAL_AMFLAGS = ${ACLOCAL_FLAGS}
 
-CPPFLAGS += -Iinclude
+AM_CPPFLAGS = -Iinclude -DRELEASE
 
 lib_LTLIBRARIES = libArgumentParser.la
 libArgumentParser_la_SOURCES = src/ArgumentParser.cpp src/ArgumentParserInternals.cpp src/convert.cpp src/Argument.cpp

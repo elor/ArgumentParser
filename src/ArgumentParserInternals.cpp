@@ -9,8 +9,6 @@
 #include <debug.hpp>
 #include <cctype>
 #include <fstream>
-#include <iostream>
-#include <cstdio>
 #include <cstdlib>
 
 using namespace std;
@@ -161,7 +159,9 @@ Argument *ArgumentParserInternals::registerArgument(const char *longKey,
 {
   if (!validateKey(longKey))
   {
+#ifdef DEBUG
     cerr << "ERROR: invalid key: '" << longKey << "'" << endl;
+#endif
     return NULL;
     //    throw runtime_error("invalid args key");
   }
@@ -173,7 +173,13 @@ Argument *ArgumentParserInternals::registerArgument(const char *longKey,
     ret = arguments.insert(
       ArgumentMap::value_type(strdup(longKey), Argument(valueType)));
 
-    assert(ret.second == true);
+    if (ret.second != true)
+    {
+#ifdef DEBUG
+      cerr << "argument already registered: " << longkey << endl;
+#endif
+      return NULL;
+    }
     it = ret.first;
   }
 
@@ -190,7 +196,12 @@ Argument *ArgumentParserInternals::registerDefault(const char *longKey,
     ret = defaults.insert(
       ArgumentMap::value_type(strdup(longKey), Argument(valueType)));
 
-    assert(ret.second == true);
+    if (ret.second != true)
+    {
+#ifdef DEBUG
+      cerr << "default value already exists: " << longkey << endl;
+#endif
+    }
     it = ret.first;
   }
 
@@ -271,8 +282,10 @@ void ArgumentParserInternals::registerTarget(const char *longKey, void *target)
 {
   if (target != NULL)
   {
-    assert(longKey != NULL);
-    targets.insert(TargetMap::value_type(strdup(longKey), target));
+    if (longKey != NULL)
+    {
+      targets.insert(TargetMap::value_type(strdup(longKey), target));
+    }
   }
 }
 
@@ -290,7 +303,14 @@ void ArgumentParserInternals::registerComment(const char *longKey,
     pair<CommentMap::iterator, bool> ret;
     ret = comments.insert(
       CommentMap::value_type(strdup(longKey), strdup(comment)));
-    assert(ret.second == true);
+    if (ret.second != true)
+    {
+#ifdef DEBUG
+      cerr << "Comment already registered: " << longkey << endl;
+#endif
+      // TODO overwrite comment
+      return;
+    }
     it = ret.first;
   } else
   {
@@ -316,7 +336,9 @@ const char *ArgumentParserInternals::fetchComment(const char *longKey)
 void ArgumentParserInternals::Bool(const char *longKey, const char *comment,
   unsigned char shortKey, bool *target)
 {
-  assert(longKey != NULL);
+  if (longKey == NULL)
+    return;
+
   registerArgument(longKey, Argument::boolType);
   registerShortKey(shortKey, longKey);
   registerComment(longKey, comment);
@@ -335,7 +357,9 @@ void ArgumentParserInternals::Bool(const char *longKey, bool defaultValue,
 void ArgumentParserInternals::Int(const char *longKey, const char *comment,
   unsigned char shortKey, int *target)
 {
-  assert(longKey != NULL);
+  if (longKey == NULL)
+    return;
+
   registerArgument(longKey, Argument::intType);
   registerShortKey(shortKey, longKey);
   registerComment(longKey, comment);
@@ -354,7 +378,9 @@ void ArgumentParserInternals::Int(const char *longKey, int defaultValue,
 void ArgumentParserInternals::UInt(const char *longKey, const char *comment,
   unsigned char shortKey, unsigned int *target)
 {
-  assert(longKey != NULL);
+  if (longKey == NULL)
+    return;
+
   registerArgument(longKey, Argument::uintType);
   registerShortKey(shortKey, longKey);
   registerComment(longKey, comment);
@@ -374,7 +400,9 @@ void ArgumentParserInternals::UInt(const char *longKey,
 void ArgumentParserInternals::Double(const char *longKey, const char *comment,
   unsigned char shortKey, double *target)
 {
-  assert(longKey != NULL);
+  if (longKey == NULL)
+    return;
+
   registerArgument(longKey, Argument::doubleType);
   registerShortKey(shortKey, longKey);
   registerComment(longKey, comment);
@@ -393,7 +421,9 @@ void ArgumentParserInternals::Double(const char *longKey, double defaultValue,
 void ArgumentParserInternals::String(const char *longKey, const char *comment,
   unsigned char shortKey, char *target)
 {
-  assert(longKey != NULL);
+  if (longKey == NULL)
+    return;
+
   registerArgument(longKey, Argument::stringType);
   registerShortKey(shortKey, longKey);
   registerComment(longKey, comment);
@@ -422,10 +452,11 @@ void ArgumentParserInternals::Standalones(int maximum, const char *helpKey,
 {
   if (standalones.size() != 0)
   {
+#ifdef DEBUG
     cerr
-      << "can't change maximum number of standalone arguments: arguments have already been read"
-      << endl;
-
+    << "can't change maximum number of standalone arguments: arguments have already been read"
+    << endl;
+#endif
     return;
     //    throw runtime_error(
     //        "can't change maximum number of standalone arguments: arguments have already been read");
@@ -439,13 +470,16 @@ void ArgumentParserInternals::Standalones(int maximum, const char *helpKey,
     maxStandalones = maximum;
   }
 
-  assert(helpKey != NULL);
-
   if (standaloneHelpKey)
   {
     free(standaloneHelpKey);
+    standaloneHelpKey = NULL;
   }
-  standaloneHelpKey = strdup(helpKey);
+  if (helpKey != NULL)
+  {
+    // THIS is not ideal
+    standaloneHelpKey = strdup(helpKey);
+  }
 
   if (standaloneComment)
   {
@@ -462,7 +496,9 @@ void ArgumentParserInternals::Standalones(int maximum, const char *helpKey,
 void ArgumentParserInternals::File(const char *longKey, const char *comment,
   unsigned char shortKey)
 {
-  assert(longKey != NULL);
+  if (longKey == NULL)
+    return;
+
   registerArgument(longKey, Argument::noType);
   registerShortKey(shortKey, longKey);
   registerComment(longKey, comment);
@@ -508,7 +544,7 @@ const char *ArgumentParserInternals::getLongKey(unsigned char shortKey)
   if (shortKeys[shortKey] == NULL)
   {
     cerr << "'" << shortKey << "' is no valid shortkey" << endl;
-    exit(1); // TODO don't immediately die on the user
+    return NULL;
   }
   return shortKeys[shortKey];
 }
@@ -660,7 +696,14 @@ void ArgumentParserInternals::getStandalone(unsigned int index, char *output)
     exit(1); // TODO don't immediately die on the user
     //    throw runtime_error("getStandalone: invalid index");
   }
-  assert(output != NULL);
+
+  if (output == NULL)
+  {
+#ifdef DEBUG
+    cerr << "getStandalone: output pointer is NULL" << endl;
+#endif
+    return;
+  }
 
   strcpy(output, standalones[index]);
 }
@@ -827,8 +870,14 @@ void ArgumentParserInternals::setAllTargets()
 void ArgumentParserInternals::setProgName(const char *_progname)
 {
   free(progname);
-  assert(_progname != NULL);
-  progname = strdup(_progname);
+
+  if (progname == NULL)
+  {
+    progname = strdup("NULL");
+  } else
+  {
+    progname = strdup(_progname);
+  }
 }
 
 void ArgumentParserInternals::parseFile(const char *filename)
@@ -975,7 +1024,12 @@ void ArgumentParserInternals::parseArgs(int argc, char **argv)
 {
   const char *lastKey = NULL; // always a long key or NULL
 
-  assert(argc > 0);
+  if (argc <= 0)
+  {
+#ifdef DEBUG
+    cerr << "parseArgs: too few arguments (argc too low)" << endl;
+#endif
+  }
 
   if (strlen(progname) == 0)
   {
@@ -1201,7 +1255,9 @@ void ArgumentParserInternals::displayHelpMessage()
 
     if (defaultValue != NULL)
     {
+#ifndef RELEASE
       assert(defaultValue->wasSet());
+#endif
       printf("   (default = ");
       switch (defaultValue->getType())
       {
