@@ -509,10 +509,17 @@ void ArgumentParserInternals::registerShortKey(unsigned char shortKey,
 {
   if (isgraph(shortKey))
   {
-    clearShortKey(shortKey);
-    if (longKey != NULL)
+    if (shortKeys[shortKey] == NULL)
     {
-      shortKeys[shortKey] = strdup(longKey);
+      clearShortKey(shortKey);
+      if (longKey != NULL)
+      {
+        shortKeys[shortKey] = strdup(longKey);
+      }
+    } else
+    {
+      cerr << "shortkey -" << shortKey << " is already registered as --"
+        << shortKeys[shortKey] << endl;
     }
   }
 }

@@ -16,7 +16,7 @@
 class ArgumentParserInternals
 {
 public:
-  typedef void(*Callback)(void*);
+  typedef void (*Callback)(void*);
 
 private:
   struct cmp_str
@@ -97,27 +97,27 @@ public:
    * use registerShortKey() instead.
    */
   void Bool(const char *longKey, const char *comment, unsigned char shortKey,
-      bool *target);
+    bool *target);
   void Bool(const char *longKey, bool defaultValue, const char *comment,
-      unsigned char shortKey, bool *target);
+    unsigned char shortKey, bool *target);
   void
   Int(const char *longKey, const char *comment, unsigned char shortKey,
-      int *target);
+    int *target);
   void Int(const char *longKey, int defaultValue, const char *comment,
-      unsigned char shortKey, int *target);
+    unsigned char shortKey, int *target);
   void UInt(const char *longKey, const char *comment, unsigned char shortKey,
-      unsigned int *target);
-  void UInt(const char *longKey, unsigned int defaultValue,
-      const char *comment, unsigned char shortKey, unsigned int *target);
+    unsigned int *target);
+  void UInt(const char *longKey, unsigned int defaultValue, const char *comment,
+    unsigned char shortKey, unsigned int *target);
   void Double(const char *longKey, const char *comment, unsigned char shortKey,
-      double *target);
+    double *target);
   void
   Double(const char *longKey, double defaultValue, const char *comment,
-      unsigned char shortKey, double *target);
+    unsigned char shortKey, double *target);
   void String(const char *longKey, const char *comment, unsigned char shortKey,
-      char *target);
+    char *target);
   void String(const char *longKey, const char *defaultValue,
-      const char *comment, unsigned char shortKey, char *target);
+    const char *comment, unsigned char shortKey, char *target);
 
   void registerCallback(const char *longKey, Callback callback, void* data);
 
