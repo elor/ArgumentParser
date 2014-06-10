@@ -2,3 +2,5 @@
 
 	* src/ArgumentParserInternals.cpp: standalone callbacks added
 	verifying longKey before settings targets and callbacks
+	getCStandalone: passing -1 shows last standalone
+

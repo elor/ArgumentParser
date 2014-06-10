@@ -741,7 +741,15 @@ void ArgumentParserInternals::getStandalone(unsigned int index, char *output)
 
 const char *ArgumentParserInternals::getCStandalone(unsigned int index)
 {
-  if (index >= standalones.size())
+  if (index == (unsigned int) -1)
+  {
+    if (getStandaloneCount() == 0)
+    {
+      cerr << "getCStandalone: list of standalones is empty" << endl;
+      return NULL;
+    }
+    return standalones[getStandaloneCount() - 1];
+  } else if (index >= standalones.size())
   {
     cerr << "getCStandalone: invalid index" << endl;
     return NULL;
