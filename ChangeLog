@@ -1,0 +1,4 @@
+2014-06-10	Erik E. Lorenz	<erik.e.lorenz@gmail.com>
+
+	* src/ArgumentParserInternals.cpp: standalone callbacks added
+	verifying longKey before settings targets and callbacks

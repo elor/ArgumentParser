@@ -143,6 +143,8 @@ args.Standalone() takes the following arguments:
 * helpKey: A single word that describes the standalone argument, e.g. "file", "name", ...
 * comment: A comment for the help page
 
+Standalones can also trigger callbacks. See next section.
+
 ### Callbacks
 
 Callbacks can be registered to every _Key_. Standalone callbacks aren't planned as of yet.
@@ -174,6 +176,10 @@ Output of `./myprog --mybool -b --mybool`:
     5 1
     5 2
     5 3
+
+To trigger callbacks for standalones, simply register a callback for the NULL key:
+
+    args.registerCallback(NULL, myCallback, &someData);
 
 ### File I/O
 

@@ -120,7 +120,12 @@ void ArgumentParserInternals::clearStandalones()
 
 void ArgumentParserInternals::clearCallbacks()
 {
-  callbacks.clear();
+  while (!callbacks.empty())
+  {
+    CallbackMap::iterator it = callbacks.begin();
+    free(const_cast<char*>(it->first));
+    callbacks.erase(it);
+  }
 }
 
 void ArgumentParserInternals::clearAll()
@@ -231,6 +236,8 @@ void ArgumentParserInternals::addStandalone(const char *standalone)
   }
 
   standalones.push_back(strdup(standalone));
+  // call standalone callback!
+  fireCallbacks("");
 }
 
 void ArgumentParserInternals::fireCallbacks(const char *longKey)
@@ -284,7 +291,10 @@ void ArgumentParserInternals::registerTarget(const char *longKey, void *target)
   {
     if (longKey != NULL)
     {
-      targets.insert(TargetMap::value_type(strdup(longKey), target));
+      if (keyExists(longKey))
+      {
+        targets.insert(TargetMap::value_type(strdup(longKey), target));
+      }
     }
   }
 }
@@ -443,8 +453,23 @@ void ArgumentParserInternals::String(const char *longKey,
 void ArgumentParserInternals::registerCallback(const char *longKey,
   Callback callback, void* data)
 {
-  callbacks.insert(
-    CallbackMap::value_type(longKey, CallbackContainer(callback, data)));
+  if (longKey)
+  {
+    if (keyExists(longKey))
+    {
+      callbacks.insert(
+        CallbackMap::value_type(strdup(longKey),
+          CallbackContainer(callback, data)));
+    } else
+    {
+      // longKey does not exist
+      // TODO freak out
+    }
+  } else
+  {
+    callbacks.insert(
+      CallbackMap::value_type(strdup(""), CallbackContainer(callback, data)));
+  }
 }
 
 void ArgumentParserInternals::Standalones(int maximum, const char *helpKey,
@@ -910,7 +935,7 @@ void ArgumentParserInternals::parseFile(const char *filename)
 
 void ArgumentParserInternals::parseLine(const char *line)
 {
-  // line format (regex): /^\s*\([a-zA-Z0-9]*\)\s*=\s*\(\S*\)\s*$/
+// line format (regex): /^\s*\([a-zA-Z0-9]*\)\s*=\s*\(\S*\)\s*$/
 
   if (line == NULL || line[0] == '\0')
   {
@@ -918,13 +943,13 @@ void ArgumentParserInternals::parseLine(const char *line)
   }
 
   const char *keyStart = line;
-  // strip leading blanks
+// strip leading blanks
   while (isblank(*keyStart))
   {
     ++keyStart;
   }
 
-  // abort on \0 or !alnum
+// abort on \0 or !alnum
   if (!isalnum(*keyStart))
   {
     switch (keyStart[0])
@@ -946,20 +971,20 @@ void ArgumentParserInternals::parseLine(const char *line)
   }
 
   const char *keyEnd = keyStart;
-  // find end of key
+// find end of key
   while (isalnum(*keyEnd))
   {
     ++keyEnd;
   }
 
-  // strip blanks in front of '='
+// strip blanks in front of '='
   const char *ptr = keyEnd;
   while (isblank(*ptr))
   {
     ++ptr;
   }
 
-  // validate existing '='
+// validate existing '='
   if (*ptr != '=')
   {
     //    cerr << "ArgumentParser::parseLine: missing '=' in line '" << line << "'"
@@ -968,13 +993,13 @@ void ArgumentParserInternals::parseLine(const char *line)
   }
 
   const char *valueStart = ptr + 1;
-  // strip blanks in front of value
+// strip blanks in front of value
   while (isblank(*valueStart))
   {
     ++valueStart;
   }
 
-  // validate valid value
+// validate valid value
   if (!isprint(*valueStart))
   {
     //    cerr
@@ -983,13 +1008,13 @@ void ArgumentParserInternals::parseLine(const char *line)
     return;
   }
 
-  // search for unexpected symbols in value
+// search for unexpected symbols in value
   const char *valueEnd = valueStart;
   while (isprint(*valueEnd))
   {
     ++valueEnd;
   }
-  // if everything's correct, we're at the end of the string
+// if everything's correct, we're at the end of the string
   if (*valueEnd != '\0')
   {
     //    cerr << "ArgumentParser::parseLine: unexpected symbol in value of line '"
@@ -997,7 +1022,7 @@ void ArgumentParserInternals::parseLine(const char *line)
     return;
   }
 
-  // strip trailing blanks
+// strip trailing blanks
   --valueEnd;
   while (isblank(*valueEnd))
   {
