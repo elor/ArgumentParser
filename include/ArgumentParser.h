@@ -11,10 +11,11 @@
 #include <cstddef>
 
 class ArgumentParserInternals;
+
 class ArgumentParser
 {
 public:
-  typedef void(*Callback)(void*);
+  typedef void (*Callback)(void*);
 
 private:
   ArgumentParserInternals *args;
@@ -34,37 +35,37 @@ public:
    * use registerShortKey() instead.
    */
   void Bool(const char *longKey, const char *comment = NULL,
-      unsigned char shortKey = '\0', bool *target = NULL);
+    unsigned char shortKey = '\0', bool *target = NULL);
   void Bool(const char *longKey, bool defaultValue, const char *comment = NULL,
-      unsigned char shortKey = '\0', bool *target = NULL);
+    unsigned char shortKey = '\0', bool *target = NULL);
   void Int(const char *longKey, const char *comment = NULL,
-      unsigned char shortKey = '\0', int *target = NULL);
+    unsigned char shortKey = '\0', int *target = NULL);
   void Int(const char *longKey, int defaultValue, const char *comment = NULL,
-      unsigned char shortKey = '\0', int *target = NULL);
+    unsigned char shortKey = '\0', int *target = NULL);
   void UInt(const char *longKey, const char *comment = NULL,
-      unsigned char shortKey = '\0', unsigned int *target = NULL);
+    unsigned char shortKey = '\0', unsigned int *target = NULL);
   void UInt(const char *longKey, unsigned int defaultValue,
-      const char *comment = NULL, unsigned char shortKey = '\0',
-      unsigned int *target = NULL);
+    const char *comment = NULL, unsigned char shortKey = '\0',
+    unsigned int *target = NULL);
   void Double(const char *longKey, const char *comment = NULL,
-      unsigned char shortKey = '\0', double *target = NULL);
+    unsigned char shortKey = '\0', double *target = NULL);
   void
   Double(const char *longKey, double defaultValue, const char *comment = NULL,
-      unsigned char shortKey = '\0', double *target = NULL);
+    unsigned char shortKey = '\0', double *target = NULL);
   void String(const char *longKey, const char *comment = NULL, char shortKey =
-      '\0', char *target = NULL);
+    '\0', char *target = NULL);
   void String(const char *longKey, const char *defaultValue,
-      const char *comment = NULL, char shortKey = '\0', char *target = NULL);
+    const char *comment = NULL, char shortKey = '\0', char *target = NULL);
 
   void registerCallback(const char *longKey, Callback callback, void* data =
-      NULL);
+  NULL);
 
   void Standalones(int maximum = -1, const char *helpKey = "argument",
-      const char *comment = NULL);
+    const char *comment = NULL);
 
   // if one of the keys are encountered, a file is included (read in place)
   void File(const char *longKey, const char *comment = NULL,
-      unsigned char shortKey = '\0');
+    unsigned char shortKey = '\0');
 
   void registerShortKey(unsigned char shortKey, const char *longKey);
   void registerComment(const char *longKey, const char *comment);

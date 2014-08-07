@@ -1,3 +1,7 @@
+2014-08-07	Erik E. Lorenz	<erik.e.lorenz@gmail.com>
+
+	* include/ArgumentParser.h: reformatted
+
 2014-06-10	Erik E. Lorenz	<erik.e.lorenz@gmail.com>
 
 	* src/ArgumentParserInternals.cpp: standalone callbacks added
