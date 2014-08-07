@@ -318,7 +318,7 @@ void ArgumentParserInternals::registerComment(const char *longKey,
 #ifdef DEBUG
       cerr << "Comment already registered: " << longkey << endl;
 #endif
-      // TODO overwrite comment
+      // TODO overwrite comment or print error
       return;
     }
     it = ret.first;
@@ -463,7 +463,7 @@ void ArgumentParserInternals::registerCallback(const char *longKey,
     } else
     {
       // longKey does not exist
-      // TODO freak out
+      // TODO handle missing long key in a smart and expected way
     }
   } else
   {
@@ -685,18 +685,19 @@ double ArgumentParserInternals::getDouble(const char *longKey)
 
 void ArgumentParserInternals::getString(const char *longKey, char *output)
 {
-  Argument *argument = fetchArgument(longKey, true);
-  if (argument == NULL)
+  if (output == NULL)
   {
-    cerr << "error: option '" << longKey << "' not defined" << endl;
-    strcpy(output, "");
-  } else if (!argument->hasType(Argument::stringType))
-  {
-    cerr << "error: option '" << longKey << "' does not have type 'String'"
-      << endl;
-    strcpy(output, "");
+    return;
   }
-  strcpy(output, argument->getString());
+
+  const char *result = getCString(longKey);
+
+  if (result == NULL)
+  {
+    result = "";
+  }
+
+  strcpy(output, result);
 }
 
 const char *ArgumentParserInternals::getCString(const char *longKey)
@@ -722,12 +723,6 @@ int ArgumentParserInternals::getStandaloneCount()
 
 void ArgumentParserInternals::getStandalone(unsigned int index, char *output)
 {
-  if (index >= standalones.size())
-  {
-    cerr << "getStandalone: invalid index" << endl;
-    strcpy(output, "");
-  }
-
   if (output == NULL)
   {
 #ifdef DEBUG
@@ -736,7 +731,14 @@ void ArgumentParserInternals::getStandalone(unsigned int index, char *output)
     return;
   }
 
-  strcpy(output, standalones[index]);
+  const char *result = getCStandalone(index);
+
+  if (result == NULL)
+  {
+    result = "";
+  }
+
+  strcpy(output, result);
 }
 
 const char *ArgumentParserInternals::getCStandalone(unsigned int index)
@@ -749,7 +751,7 @@ const char *ArgumentParserInternals::getCStandalone(unsigned int index)
       return NULL;
     }
     return standalones[getStandaloneCount() - 1];
-  } else if (index >= standalones.size())
+  } else if (index >= getStandaloneCount())
   {
     cerr << "getCStandalone: invalid index" << endl;
     return NULL;

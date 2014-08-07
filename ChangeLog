@@ -2,6 +2,9 @@
 
 	* include/ArgumentParser.h: reformatted
 
+	* src/ArgumentParserInternals.cpp: stderr messages removed and replaced by empty results
+	using internal functions instead of direct access to the standalone count
+
 2014-06-10	Erik E. Lorenz	<erik.e.lorenz@gmail.com>
 
 	* src/ArgumentParserInternals.cpp: standalone callbacks added
