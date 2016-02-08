@@ -1,3 +1,7 @@
+2016-02-08	Erik E. Lorenz	<erik.e.lorenz@gmail.com>
+
+	* .gitlab-ci.yml: building on server and desktop
+
 2014-08-07	Erik E. Lorenz	<erik.e.lorenz@gmail.com>
 
 	* include/ArgumentParser.h: reformatted
@@ -10,4 +14,3 @@
 	* src/ArgumentParserInternals.cpp: standalone callbacks added
 	verifying longKey before settings targets and callbacks
 	getCStandalone: passing -1 shows last standalone
-
